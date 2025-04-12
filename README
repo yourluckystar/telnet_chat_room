@@ -3,3 +3,14 @@ ANSI C (which is why im not using getaddrinfo here)
 
 its a small chunk of code from my main chat server i use to talk
 with friends .3
+
+USAGE
+	clone repository first
+	$ git clone https://github.com/yourluckystar/telnet_chat_room.git
+
+	then you can just cd into the dir and run make
+	$ make
+
+	start server and connect
+	$ ./server
+	$ telnet localhost 11941

@@ -23,6 +23,6 @@ void
 disconn(struct pollfd *fds, int nfds, int i)
 {
 	(void)printf("fd %d disconnected\n", fds[i].fd);
-	close(fds[i].fd);
+	(void)close(fds[i].fd);
 	fds[i] = fds[nfds - 1];
 }

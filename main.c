@@ -56,6 +56,6 @@ main(void)
 		}
 	}
 
-	close(sockfd);
+	(void)close(sockfd);
 	return 0;
 }

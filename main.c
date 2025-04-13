@@ -12,14 +12,15 @@
 int
 main(void)
 {
-	int sockfd;
-	int nfds = 2;
+	int    sockfd;
+	int    nfds = 3;
 	struct pollfd fds[MAX_FDS] = {0};
-	char buf[BUF_S];
+	char   buf[BUF_S];
 
 	sockfd = setup_sock(PORT);
-	if (sockfd == -1)
+	if (sockfd == -1) {
 		return -1;
+        }
 
 	(void)printf("listening on port %d\n", PORT);
 
@@ -29,6 +30,7 @@ main(void)
 	for (;;) {
 		int i;
 		int rv = poll(fds, nfds, -1);
+
 		if (rv < 0) {
 			perror("poll failed");
 			continue;

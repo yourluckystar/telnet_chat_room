@@ -28,7 +28,7 @@ conn(struct pollfd *fds,
 
         if (!(*sockfd >= 0 && *nfds < MAX_FDS))
         {
-                close(new_fd);
+                (void)close(new_fd);
                 return -1;
         }
 

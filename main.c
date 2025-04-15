@@ -1,62 +1,51 @@
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <poll.h>
-#include <errno.h>
-#include "conn.h"
-#include "msg.h"
 #include "sock.h"
+#include "events.h"
 #include "server.h"
 
 int
 main(void)
 {
-	int    sockfd;
-	int    nfds = 3;
-	struct pollfd fds[MAX_FDS] = {0};
-	char   buf[BUF_S];
+        int    rv;                  /* return value */
+	int    sockfd;              /* server socket file descriptor */
+	int    nfds = 1;            /* set number of fds to 1 */
+	struct pollfd fds[MAX_FDS]; /* poll array of all structs */
 
-	sockfd = setup_sock(PORT);
-	if (sockfd == -1) {
-		return -1;
+	rv = setup_sock(PORT, &sockfd);
+	if (rv == -1)
+        {
+		exit(EXIT_FAILURE);
         }
 
-	(void)printf("listening on port %d\n", PORT);
+	(void)printf("listening on port %d\n%d\n%d\n", PORT, sockfd, rv);
 
+        memset(fds, 0, sizeof(fds));
 	fds[0].fd = sockfd;
 	fds[0].events = POLLIN;
 
-	for (;;) {
-		int i;
-		int rv = poll(fds, nfds, -1);
-
-		if (rv < 0) {
-			perror("poll failed");
+	for (;;)
+        {
+                /* -1 disables the poll timeout */
+		rv = poll(fds, nfds, -1);
+		if (rv < 0)
+                {
+			perror("poll(2) failed");
 			continue;
 		}
 
-		for (i = 0; i < nfds; ++i) {
-			int bytes;
-			if (!(fds[i].revents & POLLIN))
-				continue;
-
-			if (i == 0) {
-				conn(fds, nfds, i, sockfd);
-				++nfds;
-				continue;
-			}
-
-			bytes = recv(fds[i].fd, buf, BUF_S - 1, 0);
-			if (bytes > 0) {
-				broadcast(fds[i].fd, fds, nfds, buf, bytes);
-			} else if (bytes <= 0) {
-				disconn(fds, nfds, i);
-				--nfds;
-				--i;
-			}
-		}
-	}
+                /* if a file descriptor is ready we can
+                 * loop through each fd to find it */
+                rv = poll_events(fds, &nfds, &sockfd);
+                if (rv == -1)
+                {
+                        continue;
+                }
+        }
 
 	(void)close(sockfd);
 	return 0;

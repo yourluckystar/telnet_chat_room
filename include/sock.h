@@ -2,6 +2,6 @@
 #define SOCK_H
 
 int setnonblocking(int sockfd);
-int setup_sock(int port);
+int setup_sock(int port, int *sockfd);
 
 #endif

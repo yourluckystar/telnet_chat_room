@@ -22,7 +22,7 @@ main(void)
 		exit(EXIT_FAILURE);
         }
 
-	(void)printf("listening on port %d\n%d\n%d\n", PORT, sockfd, rv);
+	(void)printf("listening on port %d\n", PORT);
 
         memset(fds, 0, sizeof(fds));
 	fds[0].fd = sockfd;

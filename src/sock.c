@@ -22,16 +22,17 @@ int
 setup_sock(int port,
            int *sockfd)
 {
-        struct sockaddr_in addr;
+        struct sockaddr_in6 addr;
 	int rv;
 	int yes = 1;
+        int no = 0;
 
 	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(port);
-	addr.sin_addr.s_addr = INADDR_ANY;
+	addr.sin6_family = AF_INET6;
+	addr.sin6_port = htons(port);
+	addr.sin6_addr = in6addr_any;
 
-	*sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	*sockfd = socket(AF_INET6, SOCK_STREAM, 0);
 	if (*sockfd == -1)
         {
 		(void)printf("socket(2) failed: %d\n", errno);
@@ -44,6 +45,12 @@ setup_sock(int port,
 		(void)printf("setsockopt(2) failed: %d\n", errno);
 		return -1;
 	}
+        rv = setsockopt(*sockfd, IPPROTO_IPV6, IPV6_V6ONLY, &no, sizeof(no));
+        if (rv == -1)
+        {
+                (void)printf("setsockopt(2) failed 2: %d\n", errno);
+                return -1;
+        }
 
 	rv = bind(*sockfd, (struct sockaddr*)&addr, sizeof(addr));
 	if (rv == -1)
